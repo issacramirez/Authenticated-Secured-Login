@@ -3,7 +3,6 @@ package com.proyect.backend.apirest.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import com.proyect.backend.apirest.models.Cliente;
 import com.proyect.backend.apirest.modelsServices.ICLienteService;
@@ -43,18 +42,16 @@ public class ClienteRestController {
         Map<String, Object> response = new HashMap<>();
         try {
             cliente = clienteService.findById(id);
-        } catch (NoSuchElementException e) {
-            response.put("Mensaje", "Error al realizar la consulta en la base de datos.");
-            response.put("Error", "El cliente ID: ".concat(id.toString().concat(" no existe en la Base de Datos.")));
-            response.put("Estatus", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            if(cliente == null){
+                response.put("mensaje", "El cliente ID: ".concat(id.toString().concat(" no existe en la Base de Datos.")));
+                response.put("error", "Exception: ".concat(e.getClass().getSimpleName()));
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+            }
+            response.put("mensaje", "Error al realizar la consulta en la base de datos.");
+            response.put("error", e.getMessage().concat(": ").concat(e.getCause().toString()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        // if(cliente == null){
-        // response.put("Error", "El cliente ID:".concat(id.toString().concat(" no
-        // existe en la Base de Datos.")));
-        // return new ResponseEntity<Map<String, Object>>(response,
-        // HttpStatus.NOT_FOUND);
-        // }
         return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
     }
 
@@ -65,19 +62,18 @@ public class ClienteRestController {
         try {
             nuevoCliente = clienteService.save(cliente);
         } catch (DataAccessException e) {
-            response.put("Mensaje", "Error al realizar el insert en la base de datos.");
-            response.put("Error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-            response.put("Estatus", HttpStatus.INTERNAL_SERVER_ERROR);
+            response.put("mensaje", "Error al realizar el insert en la base de datos.");
+            response.put("error", e.getMostSpecificCause().getMessage());
+            response.put("error1", "Exception: ".concat(e.getClass().getSimpleName()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        response.put("Mensaje", "El cliente se ha creado con éxito");
-        response.put("Cliente", nuevoCliente);
+        response.put("mensaje", "El cliente se ha creado con éxito");
+        response.put("cliente", nuevoCliente);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/clientes/{id}")
-    // @ResponseStatus(HttpStatus.CREATED) // return 201, indica que se ha creado
-    // contenido
+    // @ResponseStatus(HttpStatus.CREATED) // return 201, indica que se ha creado contenido
     public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
         Cliente nuevoCliente = null;
         Cliente clienteActual = null;
@@ -86,7 +82,7 @@ public class ClienteRestController {
         try {
             clienteActual = clienteService.findById(id);
         } catch (Exception e) {
-            response.put("Mensaje", "Error: no se pudo editar, El cliente ID: ".concat(id.toString().concat(" no existe en la Base de Datos.")));
+            response.put("mensaje", "Error: no se pudo editar, El cliente ID: ".concat(id.toString().concat(" no existe en la Base de Datos.")));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
         }
 
@@ -99,13 +95,13 @@ public class ClienteRestController {
             nuevoCliente = clienteService.save(clienteActual);
 
         } catch (DataAccessException e) {
-            response.put("Mensaje", "Error al actualizar en la base de datos.");
-            response.put("Error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-            response.put("Estatus", HttpStatus.INTERNAL_SERVER_ERROR);
+            response.put("mensaje", "Error al actualizar en la base de datos.");
+            response.put("error", e.getMostSpecificCause().getMessage());
+            response.put("error1", "Exception: ".concat(e.getClass().getSimpleName()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        response.put("Mensaje", "El cliente se ha actualizado con éxito");
-        response.put("Cliente", nuevoCliente);
+        response.put("mensaje", "El cliente se ha actualizado con éxito");
+        response.put("cliente", nuevoCliente);
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
@@ -118,9 +114,9 @@ public class ClienteRestController {
         try{
             clienteService.delete(id);
         }catch(DataAccessException e){
-            response.put("Mensaje", "Error al eliminar de la base de datos.");
-            response.put("Error", e.getMessage());
-            response.put("Estatus", HttpStatus.INTERNAL_SERVER_ERROR);
+            response.put("mensaje", "Error al eliminar de la base de datos.");
+            response.put("error", e.getMostSpecificCause().getMessage());
+            response.put("error1", "Exception: ".concat(e.getClass().getSimpleName()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         response.put("mensaje", "El cliente ha sido eliminado con exito!");
