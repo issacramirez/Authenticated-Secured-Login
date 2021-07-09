@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BackendApirestApplication<backend-apirest>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.proyect.backend.apirest.BackendApirestApplication",
+            "projectName": "backend-apirest",
+            "args": ""
+        }
+    ]
+}

@@ -64,7 +64,6 @@ public class ClienteRestController {
         Map<String, Object> response = new HashMap<>();
 
         if(result.hasErrors() ){
-
             List<String> errors = result.getFieldErrors()
                             .stream()
                             .map(e -> "El campo: '" + e.getField() + "' " + e.getDefaultMessage())
