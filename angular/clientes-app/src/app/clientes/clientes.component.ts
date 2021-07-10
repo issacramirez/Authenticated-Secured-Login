@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Cliente } from './cliente';
 import { ClienteService } from './cliente.service';
 import swal from 'sweetalert2';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -11,16 +12,26 @@ import swal from 'sweetalert2';
 export class ClientesComponent implements OnInit {
 
   clientes: Cliente[] = [];
-
-  constructor(private clienteService: ClienteService) { }
+  paginador: any;
+  
+  constructor(private clienteService: ClienteService, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.clienteService.getClientes().subscribe(
-      clientes => this.clientes = clientes
-    );
-  }
 
-  
+    this.activatedRoute.paramMap.subscribe( params => {
+      let page: number = +params.get('page')!; 
+
+      if (page == null) {
+        page = 0;
+      }
+
+      this.clienteService.getClientes(page).subscribe(response => {
+        this.clientes = response.content as Cliente[]
+        this.paginador = response;
+      });
+    });
+
+  }
 
   delete(cliente: Cliente): void {
     const swalWithBootstrapButtons = swal.mixin({
@@ -30,7 +41,7 @@ export class ClientesComponent implements OnInit {
       },
       buttonsStyling: false
     })
-    
+
     swalWithBootstrapButtons.fire({
       title: 'Estás seguro?',
       text: `Seguro que desea eliminar al cliente ${cliente.nombre} ${cliente.apellido}`,
@@ -50,7 +61,7 @@ export class ClientesComponent implements OnInit {
               'success'
             )
           }
-        )   
+        )
       }
     })
   }
