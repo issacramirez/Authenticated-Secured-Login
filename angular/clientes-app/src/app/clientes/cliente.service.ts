@@ -28,7 +28,7 @@ export class ClienteService {
       }),
       map( (response: any) => {
         (response.content as Cliente[]).map(cliente => {
-          cliente.createAt = formatDate(cliente.createAt, 'EEEE, dd MMMM yyyy hh:mm:ss a', 'es');
+          cliente.createAt = formatDate(cliente.createAt, 'EEEE dd, MMMM yyyy hh:mm:ss a', 'es');
           return cliente;
         });
         return response; 
