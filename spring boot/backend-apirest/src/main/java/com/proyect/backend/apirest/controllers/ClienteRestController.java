@@ -1,5 +1,6 @@
 package com.proyect.backend.apirest.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -144,10 +145,19 @@ public class ClienteRestController {
 
     @DeleteMapping("/clientes/{id}")
     //@ResponseStatus(HttpStatus.NO_CONTENT) // 204
-    public ResponseEntity<?> destroy(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
 
         try{
+            Cliente cliente = clienteService.findById(id);
+            String fotoAnterior = cliente.getFoto();
+            if(fotoAnterior != null && fotoAnterior.length() > 0){
+                Path rutaFotoAnterior = Paths.get("uploads").resolve(fotoAnterior).toAbsolutePath();
+                File archivoFotoAnterior = rutaFotoAnterior.toFile();
+                if(archivoFotoAnterior.exists() && archivoFotoAnterior.canRead()){
+                    archivoFotoAnterior.delete();
+                }
+            }
             clienteService.delete(id);
         }catch(DataAccessException e){
             response.put("mensaje", "Error al eliminar de la base de datos.");
@@ -166,7 +176,7 @@ public class ClienteRestController {
 
         Cliente cliente = clienteService.findById(id);
         if(!archivo.isEmpty()){
-            String nombreArchivo = UUID.randomUUID().toString().toUpperCase() + "_" + archivo.getOriginalFilename().replace(" ", "");
+            String nombreArchivo = UUID.randomUUID().toString().toUpperCase() + "_" + cliente.getId() + "_" + archivo.getOriginalFilename().replace(" ", "");
             Path rutaArchivo = Paths.get("uploads").resolve(nombreArchivo).toAbsolutePath();
             try {
                 Files.copy(archivo.getInputStream(), rutaArchivo);
@@ -175,6 +185,14 @@ public class ClienteRestController {
                 response.put("error", e.getMessage().concat(": ").concat(e.getCause().getMessage()));
                 response.put("error1", "Exception: ".concat(e.getClass().getSimpleName()));
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            String fotoAnterior = cliente.getFoto();
+            if(fotoAnterior != null && fotoAnterior.length() > 0){
+                Path rutaFotoAnterior = Paths.get("uploads").resolve(fotoAnterior).toAbsolutePath();
+                File archivoFotoAnterior = rutaFotoAnterior.toFile();
+                if(archivoFotoAnterior.exists() && archivoFotoAnterior.canRead()){
+                    archivoFotoAnterior.delete(); 
+                }
             }
             cliente.setFoto(nombreArchivo);
             clienteService.save(cliente);
