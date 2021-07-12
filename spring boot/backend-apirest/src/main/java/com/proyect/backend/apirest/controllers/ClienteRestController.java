@@ -2,6 +2,7 @@ package com.proyect.backend.apirest.controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,11 +16,17 @@ import javax.validation.Valid;
 
 import com.proyect.backend.apirest.models.Cliente;
 import com.proyect.backend.apirest.modelsServices.ICLienteService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -44,6 +51,8 @@ public class ClienteRestController {
     @Autowired
     private ICLienteService clienteService;
 
+    private final Logger log = LoggerFactory.getLogger(ClienteRestController.class);
+
     @GetMapping("/clientes")
     public List<Cliente> index() {
         return clienteService.findAll();
@@ -63,7 +72,7 @@ public class ClienteRestController {
         try {
             cliente = clienteService.findById(id);
         } catch (Exception e) {
-            if(cliente == null){
+            if (cliente == null) {
                 response.put("mensaje", "El cliente ID: ".concat(id.toString().concat(" no existe en la Base de Datos.")));
                 response.put("error", "Exception: ".concat(e.getClass().getSimpleName()));
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
@@ -178,6 +187,7 @@ public class ClienteRestController {
         if(!archivo.isEmpty()){
             String nombreArchivo = UUID.randomUUID().toString().toUpperCase() + "_" + cliente.getId() + "_" + archivo.getOriginalFilename().replace(" ", "");
             Path rutaArchivo = Paths.get("uploads").resolve(nombreArchivo).toAbsolutePath();
+            log.info(rutaArchivo.toString());
             try {
                 Files.copy(archivo.getInputStream(), rutaArchivo);
             } catch (IOException e) {
@@ -199,6 +209,25 @@ public class ClienteRestController {
             response.put("cliente", cliente);response.put("mensaje", "haz subido correctamente la imagen: " + nombreArchivo);
         }
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+    }
+
+    // metodo handler para ver imagen en el controlador
+    @GetMapping("/uploads/img/{nombreFoto:.+}")
+    public ResponseEntity<Resource> verFoto(@PathVariable String nombreFoto){
+        Path rutaArchivo = Paths.get("uploads").resolve(nombreFoto).toAbsolutePath();
+        log.info(rutaArchivo.toString());
+        Resource recurso = null;
+        try {
+            recurso = new UrlResource(rutaArchivo.toUri());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        if(!recurso.exists() && !recurso.isReadable()){
+            throw new RuntimeException("Error: no se pudo cargar la imagen: " + nombreFoto);
+        }
+        HttpHeaders cabecera = new HttpHeaders();
+        cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"");
+        return new ResponseEntity<Resource>(recurso, cabecera, HttpStatus.OK);
     }
 
 }
