@@ -14,6 +14,11 @@
                         <input (change)="seleccionarFoto($event)" type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
                         <button (click)="subirFoto()" [disabled]="!imagenSeleccionada" class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Upload</button>
                     </div>
+                    <div *ngIf="progreso > 0" class="progress mt-3" style="height: 20px;">
+                        <div class="progress-bar progress-bar-striped" role="progressbar" [ngStyle]="{width:progreso+'%'}" attr.aria-valuenow="{{progreso}}" aria-valuemin="0" aria-valuemax="100">
+                            {{progreso}}%
+                        </div>
+                    </div>
                 </div>
                 <div class="col-sm text-center">
                     <img *ngIf="cliente?.foto" src="http://localhost:8080/api/uploads/img/{{cliente.foto}}" alt="{{cliente.foto}}" class="img-thumbnail rounded" style="max-width:auto; max-height: 500px;">
