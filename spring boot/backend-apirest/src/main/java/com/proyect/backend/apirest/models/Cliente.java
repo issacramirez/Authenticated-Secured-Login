@@ -5,9 +5,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -15,6 +18,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "clientes")
@@ -43,6 +48,13 @@ public class Cliente implements Serializable {
     private Date createAt;
 
     private String foto;
+
+    // LAZY = carga peresosa, cada vez que invoquemos el metodo o atributo, cuando se invoque es cuando se realiza la carga
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id") // llave foranea, el id en la tabla
+    // LAZY generra un proxy hacia region que genera otros atributos adicionales propios de framework, para omitirlos se usa la anotacion @JsonIgnoreProperties
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
+    private Region region;
     
     public String getFoto() {
         return foto;
@@ -90,6 +102,14 @@ public class Cliente implements Serializable {
 
     public void setCreateAt(Date createAt) {
         this.createAt = createAt;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
     }
 
     private static final long serialVersionUID = 1L;
