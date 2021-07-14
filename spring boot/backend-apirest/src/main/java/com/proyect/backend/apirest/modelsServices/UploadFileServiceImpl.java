@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import com.proyect.backend.apirest.models.Cliente;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -35,10 +37,9 @@ public class UploadFileServiceImpl implements IUploadFileService {
         return recurso;
     }
 
-    // + "_" + cliente.getId()
     @Override
-    public String copiar(MultipartFile archivo) throws IOException {
-        String nombreArchivo = UUID.randomUUID().toString().toUpperCase() + "_" + archivo.getOriginalFilename().replace(" ", "");
+    public String copiar(MultipartFile archivo, Cliente cliente) throws IOException {
+        String nombreArchivo = UUID.randomUUID().toString().toUpperCase() + "_" + cliente.getId() + "_" + archivo.getOriginalFilename().replace(" ", "");
         Path rutaArchivo = getPath(nombreArchivo);
         log.info(rutaArchivo.toString());
         Files.copy(archivo.getInputStream(), rutaArchivo);
