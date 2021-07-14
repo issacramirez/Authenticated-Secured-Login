@@ -179,7 +179,7 @@ public class ClienteRestController {
         if(!archivo.isEmpty()){
             String nombreArchivo = null;
             try {
-                nombreArchivo = uploadFileService.copiar(archivo);
+                nombreArchivo = uploadFileService.copiar(archivo, cliente);
             } catch (IOException e) {
                 response.put("mensaje", "Error al subir la imagen a la base de datos.");
                 response.put("error", e.getMessage().concat(": ").concat(e.getCause().getMessage()));
