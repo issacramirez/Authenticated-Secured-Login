@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Cliente } from '../cliente';
 import { ClienteService } from '../cliente.service';
-import { ActivatedRoute } from '@angular/router';
+import { ModalService } from './modal.service';
 import Swal from 'sweetalert2';
 import { HttpEventType } from '@angular/common/http';
 
@@ -11,23 +11,15 @@ import { HttpEventType } from '@angular/common/http';
   styleUrls: ['./detalle.component.css']
 })
 export class DetalleComponent implements OnInit {
-  cliente!: Cliente;
+  @Input() cliente!: Cliente;
   titulo: string = "Detalle de cliente";
   public imagenSeleccionada: File;
   progreso: number = 0;
 
-  constructor(private clienteService: ClienteService, private activatedRoute: ActivatedRoute) { }
+  constructor(private clienteService: ClienteService,
+              public modalService: ModalService,) { }
 
-  ngOnInit(): void {
-    this.activatedRoute.paramMap.subscribe(params => {
-      let id: number = +params.get('id')!;
-      if (id) {
-        this.clienteService.getCliente(id).subscribe(cliente => {
-          this.cliente = cliente;
-        });
-      }
-    });
-  }
+  ngOnInit(): void {}
 
   seleccionarFoto(event) {
     this.imagenSeleccionada = event.target.files[0];
@@ -54,6 +46,12 @@ export class DetalleComponent implements OnInit {
         
       });
     }
+  }
+
+  cerrarModal() {
+    this.modalService.cerrarModal();
+    this.imagenSeleccionada = null;
+    this.progreso = 0;
   }
 
 }
