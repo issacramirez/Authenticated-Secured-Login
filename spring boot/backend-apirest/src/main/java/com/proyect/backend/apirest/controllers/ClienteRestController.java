@@ -135,6 +135,7 @@ public class ClienteRestController {
             clienteActual.setApellido(cliente.getApellido());
             clienteActual.setEmail(cliente.getEmail());
             clienteActual.setCreateAt(cliente.getCreateAt());
+            clienteActual.setRegion(cliente.getRegion());
 
             nuevoCliente = clienteService.save(clienteActual);
 

@@ -29,26 +29,27 @@ public class Cliente implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "no puede ser vacío")
+    @NotEmpty(message = "el nombre no puede ser vacío")
     @Size(min = 4, max = 12, message = "el tamaño tiene que ser entre 4 y 12")
     @Column(nullable = false)
     private String nombre;
 
-    @NotEmpty(message = "no puede ser vacío")
+    @NotEmpty(message = "el apellido no puede ser vacío")
     private String apellido;
 
-    @NotEmpty(message = "no puede ser vacío")
+    @NotEmpty(message = "el email no puede ser vacío")
     @Email(message = "no es una direccion de correo bien formada")
     @Column(nullable = false, unique = true)
     private String email;
 
-    @NotNull(message = "no puede ser vacío")
+    @NotNull(message = "la fecha no puede ser vacía")
     @Column(name = "create_at")
     @Temporal(TemporalType.DATE)
     private Date createAt;
 
     private String foto;
 
+    @NotNull(message = "la region no puede ser vacía")
     // LAZY = carga peresosa, cada vez que invoquemos el metodo o atributo, cuando se invoque es cuando se realiza la carga
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id") // llave foranea, el id en la tabla
