@@ -1,0 +1,34 @@
+<!-- <div class="card text-dark bg-light mb-3 "> -->
+    <div class="card-header">Region</div>
+    <div class="card-body text-primary">
+      <!-- <div class="my-2 text-left">
+        <button class="btn btn-rounded btn-primary" type="button" [routerLink]="['/clientes/form']">Crear Cliente</button>
+      </div> -->
+
+        <h5 class="card-title">Listado de Regiones</h5>
+        <div *ngIf="regiones?.length == 0" class="alert alert-info">
+          No hay registros en la base de datos
+        </div>
+        <table class="table table-bordered table-striped" *ngIf="regiones?.length > 0">
+          <thead>
+            <tr>
+                <th>id</th>
+                <th>nombre</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let region of regiones">
+                <td>{{ region.id }}</td>
+                <td>{{ region.nombre }}</td>
+                <!-- <td>
+                  <button type="button" name="button" [routerLink]="['/clientes/form', cliente.id]" class="btn btn-primary">Editar</button>
+                </td> -->
+                <!-- <td>
+                  <button type="button" name="eliminar" (click)="delete(cliente)" class="btn btn-danger btn-sm">Eliminar</button>
+                </td> -->
+            </tr>
+          </tbody>
+      </table>
+
+    </div>
+<!-- </div> -->
