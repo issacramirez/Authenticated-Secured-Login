@@ -118,7 +118,11 @@ public class ClienteRestController {
         Map<String, Object> response = new HashMap<>();
 
         if(result.hasErrors()){
-            List<String> errors = result.getFieldErrors().stream().map(e -> "El campo: '" + e.getField() + "' tiene error: " + e.getDefaultMessage()).collect(Collectors.toList());
+            List<String> errors = result.getFieldErrors()
+                                        .stream()
+                                        .map(e -> "El campo: '" + e.getField() + "' tiene error: " + e.getDefaultMessage())
+                                        .collect(Collectors.toList());
+                                        
             response.put("errors", errors);
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
