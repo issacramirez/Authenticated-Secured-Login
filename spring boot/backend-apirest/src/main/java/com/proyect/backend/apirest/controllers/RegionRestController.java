@@ -19,7 +19,7 @@ public class RegionRestController {
     @Autowired
     private IRegionService regionService;
 
-    @GetMapping("/region")
+    @GetMapping("/regiones")
     public List<Region> index() {
         return regionService.findAll();
     }

@@ -14,8 +14,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     // nos permite implementar todas las reglas de seguridad de nuestros endpoints hacia los recursos de la aplicacion
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/clientes", "/api/regiones").permitAll() // permite las rutas del metodo
-            .anyRequest().authenticated() // cualquier otra ruta se requiere autenticación
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/clientes").permitAll()
+                                .antMatchers(HttpMethod.GET, "/api/regiones").permitAll() // permite las rutas del metodo
+                                .anyRequest().authenticated() // cualquier otra ruta se requiere autenticación
         ;
     }
     
