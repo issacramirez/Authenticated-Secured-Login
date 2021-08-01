@@ -1,5 +1,7 @@
 package com.proyect.backend.apirest.auth;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
@@ -25,11 +28,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Qualifier("authenticationManager")
     private AuthenticationManager authenticationManager;
 
-    // se encarga de todo el proceso de autenticación y de validar el token
-    @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager).tokenStore(tokenStore()).accessTokenConverter(accessTokenConverter());
-    }
+    @Autowired
+    private InfoAdicionaltoken infoAdicionaltoken;
 
     // esta funcion es opcional ya que .tokeStore(tokenStore()) ya lo ahce por defecto "AuthorizationServerEndpointsConfigurer"
     @Bean
@@ -63,6 +63,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                // concecion refresh token es para un token nuevo
                .accessTokenValiditySeconds(3600) // tiempo en que caduca el token (en segundos)
                .refreshTokenValiditySeconds(3600); // tiempo de expiracion del refresh token
+    }
+
+    // se encarga de todo el proceso de autenticación y de validar el token
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(infoAdicionaltoken, accessTokenConverter()));
+        endpoints.authenticationManager(authenticationManager).tokenStore(tokenStore()).accessTokenConverter(accessTokenConverter()).tokenEnhancer(tokenEnhancerChain);
     }
 
 }

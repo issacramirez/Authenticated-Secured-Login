@@ -32,6 +32,13 @@ public class Usuario implements Serializable {
 
     private Boolean enabled;
 
+
+    private String nombre;
+    private String apellido;
+
+    @Column(unique = true)
+    private String email;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     // si le queremos cambiar el nombre a la tabla intermedia
     @JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "role_id"), uniqueConstraints = {
@@ -76,6 +83,30 @@ public class Usuario implements Serializable {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+    
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     private static final long serialVersionUID = 1L;
