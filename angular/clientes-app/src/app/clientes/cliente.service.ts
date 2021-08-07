@@ -18,6 +18,14 @@ export class ClienteService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
+  private isNotAuthorized(e): boolean {
+    if(e.status == 401 || e.status == 403) {
+      this.router.navigate(['/login'])
+      return true;
+    }
+    return false;
+  }
+
   getClientes(page: number): Observable<any> {
     return this.http.get(this.urlEndPoint + '/page/' + page).pipe(
       tap((response: any) => {
@@ -39,6 +47,9 @@ export class ClienteService {
   getCliente(id: number): Observable<Cliente> {
     return this.http.get<Cliente>(`${this.urlEndPoint}/${id}`).pipe(
       catchError(e => {
+        if(this.isNotAuthorized(e)){
+          return throwError(e);
+        }
         this.router.navigate(['/clientes']);
         console.error("Error :( -> " + e.error.error);
         Swal.fire('Error al editar', e.error.mensaje, 'error');
@@ -51,7 +62,9 @@ export class ClienteService {
     return this.http.post(this.urlEndPoint, cliente, { headers: this.httpHeaders }).pipe(
       map((response: any) => response.cliente as Cliente), // esto es para dejar que regrese un Cliente y no se use any
       catchError(e => {
-
+        if(this.isNotAuthorized(e)){
+          return throwError(e);
+        }
         if (e.status == 400) {
           return throwError(e);
         }
@@ -67,6 +80,10 @@ export class ClienteService {
     return this.http.put<any>(`${this.urlEndPoint}/${cliente.id}`, cliente, { headers: this.httpHeaders }).pipe(
       catchError(e => {
 
+        if(this.isNotAuthorized(e)){
+          return throwError(e);
+        }
+
         if (e.status == 400) {
           return throwError(e);
         }
@@ -81,6 +98,9 @@ export class ClienteService {
   delete(id: number): Observable<Cliente> {
     return this.http.delete<Cliente>(`${this.urlEndPoint}/${id}`, { headers: this.httpHeaders }).pipe(
       catchError(e => {
+        if(this.isNotAuthorized(e)){
+          return throwError(e);
+        }
         console.error(e.error.error1);
         Swal.fire(e.error.mensaje, e.error.error, 'error');
         return throwError(e);
@@ -97,7 +117,12 @@ export class ClienteService {
       reportProgress: true
     });
 
-    return this.http.request(req);
+    return this.http.request(req).pipe(
+      catchError(e => {
+        this.isNotAuthorized(e);
+        return throwError(e);
+      })
+    );
   }
 
 }
