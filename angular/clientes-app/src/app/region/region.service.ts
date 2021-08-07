@@ -9,7 +9,7 @@ import { Region } from "./region";
 })
 export class RegionService {
 
-    private urlEndPoint: string = "http://localhost:8080/api/region";
+    private urlEndPoint: string = "http://localhost:8080/api/regiones";
 
     constructor (private http: HttpClient) {}
 
